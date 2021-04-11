@@ -47,21 +47,21 @@ public class Main {
                 }
 
                 SecureRandom randomKey = new SecureRandom();
-                byte  preKey = (byte) randomKey.nextInt();
-                String key = Integer. toString(preKey);
+                byte key[] = new byte[16];
+                randomKey.nextBytes(key);
+
+                StringBuilder builde = new StringBuilder();
+                for (byte b : key) {
+                    builde.append(String.format("%02X",b));
+                }
+                String keyForUser = builde.toString();
 
                 SecureRandom randomStep = new SecureRandom();
                 byte  preStep = (byte) (1 + randomStep.nextInt(lenArr));
                 String step = Integer. toString(preStep);
 
-                String keyHach = "";
-                MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-                messageDigest.update(key.getBytes());
-                byte[] digestedBytes = messageDigest.digest();
-                keyHach = DatatypeConverter.printHexBinary(digestedBytes);
-
                 Mac mac = Mac.getInstance("HmacSHA256");
-                mac.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
+                mac.init(new SecretKeySpec(key, "HmacSHA256"));
                 byte[] preHmac = mac.doFinal(step.getBytes());
                 StringBuilder builder = new StringBuilder();
                 for (byte b : preHmac) {
@@ -130,7 +130,7 @@ public class Main {
                         }
 
                         System.out.println("HMAC key:");
-                        System.out.println(keyHach);
+                        System.out.println(keyForUser);
                         i = 99;
                     }
                 }

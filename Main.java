@@ -20,13 +20,13 @@ public class Main {
             }
             else
             {
-                int flagRepiat = 0;
+                boolean flagRepiat = false;
                 for (int j = 0; j < args.length; j++) {
                     for (int k = j + 1; k < args.length; k++) {
-                        if (args[j].equals(args[k])) flagRepiat = 1;
+                        if (args[j].equals(args[k])) flagRepiat = true;
                     }
                 }
-                if (flagRepiat == 1) {
+                if (flagRepiat) {
                     System.out.println("Error! The number must be greater than or equal to 3! The number must be even! No repetitionsTry again:");
                     break;
                 }

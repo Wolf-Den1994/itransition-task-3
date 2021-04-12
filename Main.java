@@ -11,12 +11,12 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
-        for (byte i = 1; i < 2; i++) {
+        for (;;) {
             Scanner in = new Scanner(System.in);
             int lenArr = args.length;
             if (lenArr == 0 || lenArr < 3 || lenArr % 2 == 0) {
                 System.out.println("Error! The number must be greater than or equal to 3! The number must be even! No repetitionsTry again:");
-                i = 1;
+                break;
             }
             else
             {
@@ -28,7 +28,7 @@ public class Main {
                 }
                 if (flagRepiat == 1) {
                     System.out.println("Error! The number must be greater than or equal to 3! The number must be even! No repetitionsTry again:");
-                    i = 1;
+                    break;
                 }
                 else
                 {
@@ -114,7 +114,6 @@ public class Main {
 
                         System.out.println("HMAC key:");
                         System.out.println(keyForUser + "\n");
-                        i = 0;
                     }
                 }
             }

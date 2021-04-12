@@ -10,72 +10,56 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static String getHash(byte[] inputBytes, String algoritm) {
-        String hashValue = "";
-        try{
-            MessageDigest messageDigest = MessageDigest.getInstance(algoritm);
-            messageDigest.update(inputBytes);
-            byte[] digestedBytes = messageDigest.digest();
-            hashValue = DatatypeConverter.printHexBinary(digestedBytes);
-        }
-        catch (Exception e) {}
-        return hashValue;
-    }
-
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
-
-        for (byte i = 1; i < 100; i++) {
+        for (byte i = 1; i < 2; i++) {
             Scanner in = new Scanner(System.in);
-            String receivedValue = in.nextLine();
-
-            String[] arrReceivedValue = receivedValue.split("\\s+");
-            for (int j = 3; j < arrReceivedValue.length; j++) {
-                arrReceivedValue[j] = arrReceivedValue[j].replaceAll("[^\\w]", "");
-            }
-            String[] arrReceivedValueRed = Arrays.copyOfRange(arrReceivedValue, 3, arrReceivedValue.length);
-            int lenArr = arrReceivedValueRed.length;
-            if (lenArr == 0) {
+            int lenArr = args.length;
+            if (lenArr == 0 || lenArr < 3 || lenArr % 2 == 0) {
                 System.out.println("Error! The number must be greater than or equal to 3! The number must be even! No repetitionsTry again:");
                 i = 1;
             }
             else
             {
-                for (int j = 0; j < arrReceivedValueRed.length; j++) {
-                    for (int k = 0; k < arrReceivedValue.length; k++) {
-                        if (arrReceivedValueRed[j] == arrReceivedValue[k]) i = 99;
+                int flagRepiat = 0;
+                for (int j = 0; j < args.length; j++) {
+                    for (int k = j + 1; k < args.length; k++) {
+                        if (args[j].equals(args[k])) flagRepiat = 1;
                     }
                 }
-
-                SecureRandom randomKey = new SecureRandom();
-                byte key[] = new byte[16];
-                randomKey.nextBytes(key);
-
-                StringBuilder builde = new StringBuilder();
-                for (byte b : key) {
-                    builde.append(String.format("%02X",b));
+                if (flagRepiat == 1) {
+                    System.out.println("Error! The number must be greater than or equal to 3! The number must be even! No repetitionsTry again:");
+                    i = 1;
                 }
-                String keyForUser = builde.toString();
-
-                SecureRandom randomStep = new SecureRandom();
-                byte  preStep = (byte) (1 + randomStep.nextInt(lenArr));
-                String step = Integer. toString(preStep);
-
-                Mac mac = Mac.getInstance("HmacSHA256");
-                mac.init(new SecretKeySpec(key, "HmacSHA256"));
-                byte[] preHmac = mac.doFinal(step.getBytes());
-                StringBuilder builder = new StringBuilder();
-                for (byte b : preHmac) {
-                    builder.append(String.format("%02X",b));
-                }
-                String hmac = builder.toString();
-
-                if (lenArr >= 3 && lenArr % 2 != 0)
+                else
                 {
+                    SecureRandom randomKey = new SecureRandom();
+                    byte key[] = new byte[16];
+                    randomKey.nextBytes(key);
+
+                    StringBuilder builde = new StringBuilder();
+                    for (byte b : key) {
+                        builde.append(String.format("%02X",b));
+                    }
+                    String keyForUser = builde.toString();
+
+                    SecureRandom randomStep = new SecureRandom();
+                    byte  preStep = (byte) (1 + randomStep.nextInt(lenArr));
+                    String step = Integer. toString(preStep);
+
+                    Mac mac = Mac.getInstance("HmacSHA256");
+                    mac.init(new SecretKeySpec(key, "HmacSHA256"));
+                    byte[] preHmac = mac.doFinal(step.getBytes());
+                    StringBuilder builder = new StringBuilder();
+                    for (byte b : preHmac) {
+                        builder.append(String.format("%02X",b));
+                    }
+                    String hmac = builder.toString();
+
                     System.out.println("HMAC:");
                     System.out.println(hmac);
                     System.out.println("Available moves:");
                     for (int k = 0; k < lenArr; k++) {
-                        System.out.println(k+1 + " - " + arrReceivedValueRed[k]);
+                        System.out.println(k+1 + " - " + args[k]);
                     }
                     System.out.println("0 - exit");
                     System.out.print("Enter your move:");
@@ -83,22 +67,21 @@ public class Main {
                     if (stepHuman == 0)
                     {
                         System.out.println("Bye bye!");
-                        i = 99;
+                        break;
                     }
                     else
                     {
-                        System.out.println("Your move:" + arrReceivedValueRed[stepHuman - 1]);
-                        System.out.println("Computer move:" + arrReceivedValueRed[preStep - 1]);
+                        System.out.println("Your move:" + args[stepHuman - 1]);
+                        System.out.println("Computer move:" + args[preStep - 1]);
 
-                        // arrReceivedValueRed stepHuman  preStep
                         double numberLength = Math.floor(lenArr / 2);
 
                         int userIndex = 0;
-                        for (int m = 0; m < arrReceivedValueRed.length; m++) {
+                        for (int m = 0; m < args.length; m++) {
                             if (m == stepHuman - 1) userIndex = m;
                         }
                         int aiIndex = 0;
-                        for (int m = 0; m < arrReceivedValueRed.length; m++) {
+                        for (int m = 0; m < args.length; m++) {
                             if (m == preStep - 1) aiIndex = m;
                         }
 
@@ -109,7 +92,7 @@ public class Main {
                             System.out.println("Draw!");
                         } else {
                             for (int k = 0; k <= numberLength; k++) {
-                                if (userIndex + k >= arrReceivedValueRed.length - 1) {
+                                if (userIndex + k >= args.length - 1) {
                                     if (aiIndex == flag) {
                                         userWin = true;
                                     }
@@ -130,14 +113,9 @@ public class Main {
                         }
 
                         System.out.println("HMAC key:");
-                        System.out.println(keyForUser);
-                        i = 99;
+                        System.out.println(keyForUser + "\n");
+                        i = 0;
                     }
-                }
-                else
-                {
-                    System.out.println("Error! The number must be greater than or equal to 3! The number must be even! No repetitionsTry again:");
-                    i = 1;
                 }
             }
         }
